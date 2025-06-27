@@ -1,20 +1,20 @@
-name: Run Pinble3D Full Flow Daily
+name: Run Pinble3D Predictor Daily
 
 on:
   schedule:
-    # 每天 UTC 0 点 = 北京时间 08:00
+    # 每天 UTC 0 点（等于北京时间 08:00）
     - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
-  run-predictor:
+  run-full-pipeline:
     runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🐍 Setup Python
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
@@ -24,24 +24,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🗂️ Run Collector (采集数据)
+      - name: 🗂️ Run Collector (采集最新一期)
         run: |
           python collector/Lottery_3d_new.py
 
-      - name: 🧩 Run Feature Generator
+      - name: 🧩 Run Feature Generator (生成最新特征)
         run: |
           python feature_engineering/feature_generator_v2.py
 
-      - name: 🔮 Run Predictor (包含微信提醒)
+      - name: 🔨 Run Trainer (重新训练模型)
+        run: |
+          python predictor/trainer.py
+
+      - name: 🔮 Run Predictor (预测 + 微信提醒)
         env:
           WECHAT_API_KEY: ${{ secrets.WECHAT_API_KEY }}
         run: |
-          python Project_Structure.py
+          python predictor/predictor.py
 
       - name: ✅ Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/*.csv
-          git commit -m "🤖 Auto-update: daily run results [skip ci]" || echo "Nothing to commit"
+          git commit -m "🤖 Auto-update: daily collector + features + retrain + predict [skip ci]" || echo "Nothing to commit"
           git push origin main
