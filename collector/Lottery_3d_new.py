@@ -5,12 +5,18 @@ from bs4 import BeautifulSoup
 import re
 import os
 import pandas as pd
-
+from dotenv import load_dotenv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRESENTINFO_PATH = os.path.join(BASE_DIR, "data", "pinble3d_presentinfo.csv")
 HISTORY_PATH = os.path.join(BASE_DIR, "data", "3d_shijihao_history.csv")
 
-URL = "http://134.175.237.107:8901"
+load_dotenv()  # 本地调试时加载 .env，Actions 上忽略
+
+HOST = os.getenv("PINBLE_PRESENTINFO_HOST")
+if not HOST:
+    raise ValueError("❌ 缺少环境变量 PINBLE_PRESENTINFO_HOST")
+
+URL = f"http://{HOST}"
 
 def fetch_presentinfo():
     resp = requests.get(URL, timeout=120)
