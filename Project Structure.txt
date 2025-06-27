@@ -1,0 +1,34 @@
+D:\dev_root\Pinble3D_Predictor_v2/
+│ ├── .idea/
+│ ├── .venv/
+│ ├── Pinble3D_Predictor_v2.iml
+│ ├── Project Structure.txt
+│ ├── Project_Structure.py
+│ ├── collector/
+│    ├── Lottery_3d_new.py
+│ ├── configs/
+│ ├── data/
+│    ├── 3d_shijihao_features_v2.csv
+│    ├── 3d_shijihao_history.csv
+│    ├── 3d_shijihao_labels.csv
+│    ├── pinble3d_presentinfo.csv
+│ ├── feature_engineering/
+│    ├── feature_generator_v2.py
+│ ├── models/
+│    ├── lgbm/
+│        ├── lgbm_sim_bai.pkl
+│        ├── lgbm_sim_ge.pkl
+│        ├── lgbm_sim_shi.pkl
+│ ├── notebooks/
+│ ├── predictor/
+│    ├── __init__.py
+│    ├── __pycache__/
+│        ├── predictor.cpython-311.pyc
+│    ├── base_models/
+│        ├── __pycache__/
+│            ├── lgbm_model.cpython-311.pyc
+│        ├── lgbm_model.py
+│    ├── predictor.py
+│    ├── trainer.py
+│ ├── requirements.txt
+│ ├── run_predict.py
