@@ -2,13 +2,15 @@ name: Run Pinble3D Predictor Daily
 
 on:
   schedule:
-    # 每天 UTC 3 点（等于北京时间 11:00）
-    - cron: '0 3 * * *'
+    - cron: '0 3 * * *' # 每天 UTC 3 点（北京时间 11:00）
   workflow_dispatch:
 
 jobs:
   run-full-pipeline:
     runs-on: ubuntu-latest
+    env:
+      PINBLE_PRESENTINFO_HOST: ${{ secrets.PINBLE_PRESENTINFO_HOST }}
+      WECHAT_API_KEY: ${{ secrets.WECHAT_API_KEY }}
 
     steps:
       - name: 📥 Checkout repository
@@ -25,8 +27,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: 🗂️ Run Collector (采集最新一期)
-        env:
-          PINBLE_PRESENTINFO_HOST: ${{ secrets.PINBLE_PRESENTINFO_HOST }}
         run: |
           python collector/Lottery_3d_new.py
 
@@ -39,8 +39,6 @@ jobs:
           python predictor/trainer.py
 
       - name: 🔮 Run Predictor (预测 + 微信提醒)
-        env:
-          WECHAT_API_KEY: ${{ secrets.WECHAT_API_KEY }}
         run: |
           python predictor/predictor.py
 
