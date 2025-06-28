@@ -6,6 +6,7 @@ import re
 import os
 import pandas as pd
 from dotenv import load_dotenv
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRESENTINFO_PATH = os.path.join(BASE_DIR, "data", "pinble3d_presentinfo.csv")
 HISTORY_PATH = os.path.join(BASE_DIR, "data", "3d_shijihao_history.csv")
@@ -17,6 +18,7 @@ if not HOST:
     raise ValueError("❌ 缺少环境变量 PINBLE_PRESENTINFO_HOST")
 
 URL = f"http://{HOST}"
+
 
 def fetch_presentinfo():
     resp = requests.get(URL, timeout=120)
@@ -49,7 +51,7 @@ def fetch_presentinfo():
                     return m.group(1) if m else None
 
                 sim_code = extract_digits(r"模拟试机号：\[(.*?)\]")
-                mapped_code = extract_digits(r"试机号对应码：\[(.*?)\]")
+                open_code = extract_digits(r"开奖号：\[(.*?)\]")
                 focus_code = extract_focus(text)
                 gold_code = extract_gold(text)
 
@@ -60,12 +62,13 @@ def fetch_presentinfo():
                     "issue": issue,
                     "date": date,
                     "sim_code": sim_code,
-                    "mapped_code": mapped_code,
                     "focus_code": focus_code,
-                    "gold_code": gold_code
+                    "gold_code": gold_code,
+                    "open_code": open_code
                 }
 
     return None
+
 
 def issue_exists(issue):
     exists = False
@@ -79,26 +82,36 @@ def issue_exists(issue):
             exists = True
     return exists
 
+
 def save_presentinfo(info):
-    df = pd.DataFrame([info])
+    df = pd.DataFrame([{
+        "issue": info["issue"],
+        "date": info["date"],
+        "sim_code": info["sim_code"],
+        "focus_code": info["focus_code"],
+        "gold_code": info["gold_code"],
+        "open_code": info["open_code"]
+    }])
     if os.path.exists(PRESENTINFO_PATH):
         df.to_csv(PRESENTINFO_PATH, mode="a", index=False, header=False, encoding="utf-8-sig")
     else:
         df.to_csv(PRESENTINFO_PATH, index=False, encoding="utf-8-sig")
     print(f"✅ 已保存至 {PRESENTINFO_PATH}")
 
+
 def append_history(info):
     df = pd.DataFrame([{
         "date": info["date"],
         "issue": info["issue"],
         "sim_test_code": info["sim_code"],
-        "open_code": info["mapped_code"]
+        "open_code": info["open_code"]
     }])
     if os.path.exists(HISTORY_PATH):
         df.to_csv(HISTORY_PATH, mode="a", index=False, header=False, encoding="utf-8-sig")
     else:
         df.to_csv(HISTORY_PATH, index=False, encoding="utf-8-sig")
     print(f"📦 已追加至 {HISTORY_PATH}")
+
 
 if __name__ == "__main__":
     info = fetch_presentinfo()
