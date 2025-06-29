@@ -87,7 +87,7 @@ def main(backtest_count=200):
     plt.legend()
     plt.grid(True)
 
-    plot_path = os.path.join(BASE_DIR, "result", "batch_backtest.png")
+    plot_path = os.path.join(BASE_DIR, "data", "batch_backtest.png")
     plt.savefig(plot_path)
     print(f"✅ 命中趋势图已保存: {plot_path}")
 
