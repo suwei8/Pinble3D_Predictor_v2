@@ -1,0 +1,51 @@
+name: 回测
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-full-pipeline:
+    runs-on: ubuntu-latest
+    env:
+      PINBLE_PRESENTINFO_HOST: ${{ secrets.PINBLE_PRESENTINFO_HOST }}
+      WECHAT_API_KEY: ${{ secrets.WECHAT_API_KEY }}
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: ✅ Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🗂️ Run Collector (采集最新一期)
+        run: |
+          python collector/Lottery_3d_new.py
+
+      - name: 🧩 Run Feature Generator (生成最新特征)
+        run: |
+          python feature_engineering/feature_generator_v2.py
+
+      - name: 🔨 Run batch_validator (回测)
+        run: |
+          python predictor/batch_validator.py
+
+      - name: 🔮 Run Predictor (预测 + 微信提醒)
+        run: |
+          python predictor/predictor.py
+
+      - name: ✅ Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.csv models/lgbm/*.pkl
+          git commit -m "🤖 Auto-update: daily collector + features + retrain + predict [skip ci]" || echo "Nothing to commit"
+          git push origin master
