@@ -14,7 +14,7 @@ from base_models.lgbm_model import LGBMPredictor
 
 FEATURES_PATH = os.path.join(BASE_DIR, "data", "3d_shijihao_features_v2.csv")
 MODEL_DIR = os.path.join(BASE_DIR, "models", "lgbm")
-RESULT_PATH = os.path.join(BASE_DIR, "result", "batch_backtest.csv")
+RESULT_PATH = os.path.join(BASE_DIR, "data", "batch_backtest.csv")
 
 FEATURE_COLUMNS = [
     'sim_sum_val', 'sim_span',
