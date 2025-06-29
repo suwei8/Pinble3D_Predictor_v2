@@ -25,7 +25,7 @@ FEATURE_COLUMNS = [
 
 os.makedirs(os.path.join(BASE_DIR, "result"), exist_ok=True)
 
-def main(backtest_count=20):
+def main(backtest_count=200):
     df = pd.read_csv(FEATURES_PATH).dropna()
 
     bai_model = LGBMPredictor(label_name="sim_bai", model_dir=MODEL_DIR)
@@ -94,4 +94,4 @@ def main(backtest_count=20):
     plt.show()
 
 if __name__ == "__main__":
-    main(backtest_count=20)
+    main(backtest_count=200)
