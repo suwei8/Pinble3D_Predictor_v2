@@ -38,10 +38,6 @@ jobs:
         run: |
           python predictor/batch_validator.py
 
-      - name: 🔮 Run Predictor (预测 + 微信提醒)
-        run: |
-          python predictor/predictor.py
-
       - name: ✅ Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
